@@ -4,7 +4,7 @@
 		{
 			"type": "shell",
 			"label": "odin: run package",
-			"command": "odin run .",
+			"command": "odin run . -- -format",
 			"group": {
 				"kind": "build",
 				"isDefault": true
