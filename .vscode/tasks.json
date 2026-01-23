@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "odin: run package",
+			"command": "odin run .",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}
