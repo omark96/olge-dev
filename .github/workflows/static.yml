@@ -33,7 +33,7 @@ jobs:
         uses: laytan/setup-odin@v2.12.1
       - name: Build pages
         run: |
-          npm install
+          npm ci
           odin run .
           npx prettier --ignore-path --write build/**/*.html
       - name: Checkout
