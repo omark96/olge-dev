@@ -1,8 +1,10 @@
 package main
 
 import "base:runtime"
+import "core:encoding/json"
 import "core:flags"
 import "core:fmt"
+import "core:os"
 import "core:os/os2"
 import "core:strings"
 import "core:time"
@@ -10,10 +12,14 @@ import cm "vendor:commonmark"
 
 BUILD_ROOT :: "build/olge-dev"
 
+Article_Header :: struct {
+	title: string,
+}
+
 Article :: struct {
-	name:    string,
-	title:   string,
-	content: string,
+	using header: Article_Header,
+	name:         string,
+	content:      string,
 }
 
 articles: ^[dynamic]Article
@@ -31,7 +37,9 @@ main :: proc() {
 	fmt.println(opt)
 
 	os2.make_directory_all("./build/olge-dev/articles/")
-	os2.make_directory_all("./build/olge-dev/js/")
+	// os2.make_directory_all("./build/olge-dev/js/")
+	// os2.make_directory_all("./build/olge-dev/js/highlight/languages/")
+	// os2.make_directory_all("./build/olge-dev/js/highlight/styles/")
 	os2.make_directory_all("./build/olge-dev/styles/")
 	// str := "# Title\nHello from *Odin*!"
 	// root := cm.parse_document(raw_data(str), len(str), cm.DEFAULT_OPTIONS)
@@ -64,12 +72,13 @@ main :: proc() {
 		fmt.printfln("Error: %v", err_template)
 		return
 	}
-
+	js_copy_err := os2.copy_directory_all("build/olge-dev/", "js")
+	if js_copy_err != os2.ERROR_NONE {
+		fmt.println("Failed to copy js directory")
+		fmt.printfln("Error: %v", js_copy_err)
+		return
+	}
 	os2.copy_file("build/olge-dev/style.css", "style.css")
-	os2.copy_file("build/olge-dev/js/highlight.min.js", "js/highlight.min.js")
-	os2.copy_file("build/olge-dev/js/odin.min.js", "js/odin.min.js")
-	os2.copy_file("build/olge-dev/styles/default.css", "js/styles/default.css")
-	os2.copy_file("build/olge-dev/styles/tokyo-night-dark.css", "js/styles/tokyo-night-dark.css")
 	load_articles(articles_files)
 
 	generate_articles(template)
@@ -80,7 +89,7 @@ main :: proc() {
 
 	// generate_article_list(articles)
 	if opt.format {
-		format_html_files()
+		// format_html_files()
 	}
 	elapsed := time.since(start_time)
 	fmt.printfln("Site generated in %s", elapsed)
@@ -141,14 +150,34 @@ load_articles :: proc(articles_files: []os2.File_Info) {
 			fmt.printfln("Error: %v", err_md)
 			continue
 		}
-		root := cm.parse_document(raw_data(md), len(md), {.Unsafe})
+		start := strings.index(string(md), "---")
+		end := strings.index(string(md)[start + 3:], "---")
+		md_data: []u8
+		if start == 0 && end > start {
+			md_data = md[end + 3:]
+		} else {
+			md_data = md[:]
+		}
+		root := cm.parse_document(raw_data(md_data), len(md_data), {.Unsafe})
 		defer cm.node_free(root)
 		html := cm.render_html(root, {.Unsafe})
 		article_name := strings.trim_suffix(article.name, ".md")
-		append(
-			articles,
-			Article{title = article_name, name = article_name, content = string(html)},
-		)
+
+		header: Article_Header
+		fmt.printfln("Header start: %d, end: %d", start, end)
+		if start == 0 && end > start {
+			json_data := md[start + 5:end + 1]
+			err := json.unmarshal(json_data, &header)
+			if err != nil {
+				fmt.println("Failed to unmarshal article header")
+				fmt.printfln("Error: %v", err)
+			}
+			fmt.printfln("#%v", header)
+		} else {
+			header.title = article_name
+		}
+
+		append(articles, Article{header = header, name = article_name, content = string(html)})
 		// article_html_name := fmt.tprintf("%s.html", article_name)
 		// article_html_path, err_article_html_path := os2.join_path(
 		// 	{BUILD_ROOT, "articles", article_html_name},

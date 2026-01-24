@@ -1,3 +1,9 @@
+---
+{
+    "title": "First article"
+}
+---
+
 # Hello World
 
 This is just a sample article to have something to generate some html from
