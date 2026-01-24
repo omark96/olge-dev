@@ -167,7 +167,7 @@ load_articles :: proc(articles_files: []os2.File_Info) {
 		fmt.printfln("Header start: %d, end: %d", start, end)
 		if start == 0 && end > start {
 			header_start := strings.index(string(md), "{")
-			header_end := end + 1
+			header_end := end + 2
 			header_data := md[header_start:header_end]
 			err := json.unmarshal(header_data, &header)
 			if err != nil {
