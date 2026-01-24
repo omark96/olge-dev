@@ -166,8 +166,10 @@ load_articles :: proc(articles_files: []os2.File_Info) {
 		header: Article_Header
 		fmt.printfln("Header start: %d, end: %d", start, end)
 		if start == 0 && end > start {
-			json_data := md[start + 5:end + 1]
-			err := json.unmarshal(json_data, &header)
+			header_start := strings.index(string(md), "{")
+			header_end := end + 1
+			header_data := md[header_start:header_end]
+			err := json.unmarshal(header_data, &header)
 			if err != nil {
 				fmt.println("Failed to unmarshal article header")
 				fmt.printfln("Error: %v", err)
