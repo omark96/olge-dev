@@ -11,6 +11,7 @@ import cm "vendor:commonmark"
 BUILD_ROOT :: "build/olge-dev"
 
 Article :: struct {
+	name:    string,
 	title:   string,
 	content: string,
 }
@@ -134,7 +135,10 @@ load_articles :: proc(articles_files: []os2.File_Info) {
 		defer cm.node_free(root)
 		html := cm.render_html(root, {.Unsafe})
 		article_name := strings.trim_suffix(article.name, ".md")
-		append(articles, Article{title = article_name, content = string(html)})
+		append(
+			articles,
+			Article{title = article_name, name = article_name, content = string(html)},
+		)
 		// article_html_name := fmt.tprintf("%s.html", article_name)
 		// article_html_path, err_article_html_path := os2.join_path(
 		// 	{BUILD_ROOT, "articles", article_html_name},
@@ -158,10 +162,8 @@ load_articles :: proc(articles_files: []os2.File_Info) {
 
 generate_articles :: proc(template: []u8) {
 	for article in articles {
-		article_name := article.title
-		article_html_name := fmt.tprintf("%s.html", article_name)
 		generate_html_file(
-			fmt.tprintf("articles/%s", article_html_name),
+			fmt.tprintf("articles/%s.html", article.name),
 			article.content,
 			template,
 		)
@@ -173,14 +175,12 @@ generate_article_list :: proc() -> string {
 	sb := strings.builder_make()
 	strings.write_string(&sb, "<ul>\n")
 	for article in articles {
-		article_name := article.title
-		article_html_name := fmt.tprintf("%s.html", article_name)
 		strings.write_string(
 			&sb,
 			fmt.tprintf(
-				"<li><a href=\"articles/%s\">%s</a></li>\n",
-				article_html_name,
-				article_name,
+				"<li><a href=\"articles/%s.html\">%s</a></li>\n",
+				article.name,
+				article.title,
 			),
 		)
 	}
