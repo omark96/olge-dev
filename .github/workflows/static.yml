@@ -34,7 +34,7 @@ jobs:
       - name: Setup Odin
         uses: laytan/setup-odin@v2.12.1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
