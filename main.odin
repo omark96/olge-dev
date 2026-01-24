@@ -86,7 +86,12 @@ main :: proc() {
 	fmt.printfln("Site generated in %s", elapsed)
 }
 
-generate_html_file :: proc(file_path: string, content: string, template: []u8) {
+generate_html_file :: proc(
+	file_path: string,
+	content: string,
+	template: []u8,
+	title: string = "",
+) {
 	html_path, err_html_path := os2.join_path({BUILD_ROOT, file_path}, context.temp_allocator)
 	html_file, _ := os2.open(html_path, {.Write, .Create, .Trunc})
 	defer os2.close(html_file)
@@ -96,7 +101,7 @@ generate_html_file :: proc(file_path: string, content: string, template: []u8) {
 		return
 	}
 	html_string_builder := strings.builder_make()
-	fmt.sbprintf(&html_string_builder, string(template), content)
+	fmt.sbprintf(&html_string_builder, string(template), title, content)
 	os2.write_string(html_file, strings.to_string(html_string_builder))
 }
 
@@ -104,14 +109,19 @@ generate_index :: proc(template: []u8) {
 	content_string_builder := strings.builder_make()
 	strings.write_string(&content_string_builder, "<h1>Index</h1>")
 	strings.write_string(&content_string_builder, generate_article_list())
-	generate_html_file("index.html", strings.to_string(content_string_builder), template)
+	generate_html_file("index.html", strings.to_string(content_string_builder), template, "Index")
 }
 
 generate_article_index :: proc(template: []u8) {
 	content_string_builder := strings.builder_make()
 	strings.write_string(&content_string_builder, "<h1>Articles</h1>")
 	strings.write_string(&content_string_builder, generate_article_list())
-	generate_html_file("articles.html", strings.to_string(content_string_builder), template)
+	generate_html_file(
+		"articles.html",
+		strings.to_string(content_string_builder),
+		template,
+		"Articles",
+	)
 }
 
 load_articles :: proc(articles_files: []os2.File_Info) {
@@ -166,6 +176,7 @@ generate_articles :: proc(template: []u8) {
 			fmt.tprintf("articles/%s.html", article.name),
 			article.content,
 			template,
+			article.title,
 		)
 	}
 
