@@ -8,7 +8,7 @@ import "core:strings"
 import "core:time"
 import cm "vendor:commonmark"
 
-BUILD_ROOT :: "build"
+BUILD_ROOT :: "build/olge-dev"
 
 Article :: struct {
 	title:   string,
@@ -29,9 +29,9 @@ main :: proc() {
 	flags.parse_or_exit(&opt, os2.args, style)
 	fmt.println(opt)
 
-	os2.make_directory_all("./build/articles/")
-	os2.make_directory_all("./build/js/")
-	os2.make_directory_all("./build/styles/")
+	os2.make_directory_all("./build/olge-dev/articles/")
+	os2.make_directory_all("./build/olge-dev/js/")
+	os2.make_directory_all("./build/olge-dev/styles/")
 	// str := "# Title\nHello from *Odin*!"
 	// root := cm.parse_document(raw_data(str), len(str), cm.DEFAULT_OPTIONS)
 	// html := cm.render_html(root, cm.DEFAULT_OPTIONS)
@@ -64,12 +64,11 @@ main :: proc() {
 		return
 	}
 
-	os2.copy_file("build/style.css", "style.css")
-	os2.copy_file("build/js/highlight.min.js", "js/highlight.min.js")
-	os2.copy_file("build/js/odin.min.js", "js/odin.min.js")
-	os2.copy_file("build/styles/default.css", "js/styles/default.css")
-	os2.copy_file("build/styles/tokyo-night-dark.css", "js/styles/tokyo-night-dark.css")
-
+	os2.copy_file("build/olge-dev/style.css", "style.css")
+	os2.copy_file("build/olge-dev/js/highlight.min.js", "js/highlight.min.js")
+	os2.copy_file("build/olge-dev/js/odin.min.js", "js/odin.min.js")
+	os2.copy_file("build/olge-dev/styles/default.css", "js/styles/default.css")
+	os2.copy_file("build/olge-dev/styles/tokyo-night-dark.css", "js/styles/tokyo-night-dark.css")
 	load_articles(articles_files)
 
 	generate_articles(template)
