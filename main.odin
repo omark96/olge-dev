@@ -35,12 +35,12 @@ main :: proc() {
 	style: flags.Parsing_Style = .Odin
 	flags.parse_or_exit(&opt, os2.args, style)
 	fmt.println(opt)
-
+	os2.remove_all("build/olge-dev/")
 	os2.make_directory_all("./build/olge-dev/articles/")
-	// os2.make_directory_all("./build/olge-dev/js/")
+	os2.make_directory_all("./build/olge-dev/js/")
+	// os2.make_directory_all("./build/olge-dev/styles/")
 	// os2.make_directory_all("./build/olge-dev/js/highlight/languages/")
 	// os2.make_directory_all("./build/olge-dev/js/highlight/styles/")
-	os2.make_directory_all("./build/olge-dev/styles/")
 	// str := "# Title\nHello from *Odin*!"
 	// root := cm.parse_document(raw_data(str), len(str), cm.DEFAULT_OPTIONS)
 	// html := cm.render_html(root, cm.DEFAULT_OPTIONS)
