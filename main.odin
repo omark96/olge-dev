@@ -72,7 +72,11 @@ main :: proc() {
 		fmt.printfln("Error: %v", err_template)
 		return
 	}
-	js_copy_err := os2.copy_directory_all("build/olge-dev/", "js")
+	when ODIN_OS == .Windows {
+		js_copy_err := os2.copy_directory_all("build/olge-dev/", "js")
+	} else when ODIN_OS == .Linux {
+		js_copy_err := os2.copy_directory_all("build/olge-dev/js/", "js")
+	}
 	if js_copy_err != os2.ERROR_NONE {
 		fmt.println("Failed to copy js directory")
 		fmt.printfln("Error: %v", js_copy_err)
