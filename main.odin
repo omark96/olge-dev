@@ -10,7 +10,7 @@ import "core:strings"
 import "core:time"
 import cm "vendor:commonmark"
 
-BUILD_ROOT :: "build/olge-dev"
+BUILD_ROOT :: "build/"
 
 Article_Header :: struct {
 	title: string,
@@ -35,12 +35,12 @@ main :: proc() {
 	style: flags.Parsing_Style = .Odin
 	flags.parse_or_exit(&opt, os2.args, style)
 	fmt.println(opt)
-	os2.remove_all("build/olge-dev/")
-	os2.make_directory_all("./build/olge-dev/articles/")
-	os2.make_directory_all("./build/olge-dev/js/")
-	// os2.make_directory_all("./build/olge-dev/styles/")
-	// os2.make_directory_all("./build/olge-dev/js/highlight/languages/")
-	// os2.make_directory_all("./build/olge-dev/js/highlight/styles/")
+	os2.remove_all("build/")
+	os2.make_directory_all("./build/articles/")
+	os2.make_directory_all("./build/js/")
+	// os2.make_directory_all("./build/styles/")
+	// os2.make_directory_all("./build/js/highlight/languages/")
+	// os2.make_directory_all("./build/js/highlight/styles/")
 	// str := "# Title\nHello from *Odin*!"
 	// root := cm.parse_document(raw_data(str), len(str), cm.DEFAULT_OPTIONS)
 	// html := cm.render_html(root, cm.DEFAULT_OPTIONS)
@@ -73,16 +73,16 @@ main :: proc() {
 		return
 	}
 	when ODIN_OS == .Windows {
-		js_copy_err := os2.copy_directory_all("build/olge-dev/", "js")
+		js_copy_err := os2.copy_directory_all("build/", "js")
 	} else when ODIN_OS == .Linux {
-		js_copy_err := os2.copy_directory_all("build/olge-dev/js/", "js")
+		js_copy_err := os2.copy_directory_all("build/js/", "js")
 	}
 	if js_copy_err != os2.ERROR_NONE {
 		fmt.println("Failed to copy js directory")
 		fmt.printfln("Error: %v", js_copy_err)
 		return
 	}
-	os2.copy_file("build/olge-dev/style.css", "style.css")
+	os2.copy_file("build/style.css", "style.css")
 	load_articles(articles_files)
 
 	generate_articles(template)
