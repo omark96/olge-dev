@@ -102,14 +102,9 @@ generate_html_file :: proc(
 	template: []u8,
 	title: string = "",
 ) {
-	html_path, err_html_path := os2.join_path({BUILD_ROOT, file_path}, context.temp_allocator)
+	html_path, _ := os2.join_path({BUILD_ROOT, file_path}, context.temp_allocator)
 	html_file, _ := os2.open(html_path, {.Write, .Create, .Trunc})
 	defer os2.close(html_file)
-	if err_html_path != os2.ERROR_NONE {
-		fmt.println("Failed to create html path")
-		fmt.printfln("Error: %v", err_html_path)
-		return
-	}
 	html_string_builder := strings.builder_make()
 	fmt.sbprintf(&html_string_builder, string(template), title, content)
 	os2.write_string(html_file, strings.to_string(html_string_builder))
