@@ -64,16 +64,17 @@ a {
 }
 
 body {
-  background-color: #2c2c2c;
+  background-color: #212121;
 }
 
 header {
+  padding-top: 1rem;
   .wrapper {
     display: flex;
     justify-content: space-between;
 
     h1 {
-      font-size: 2rem;
+      font-size: 4rem;
       color: #ff6f61;
     }
 
@@ -81,7 +82,7 @@ header {
       display: flex;
       gap: 20px;
       li {
-        font-size: 2rem;
+        font-size: 4rem;
       }
       li:hover {
         color: #ff6f61;
@@ -91,9 +92,28 @@ header {
 }
 
 main {
+  padding-bottom: 3rem;
   .wrapper {
     h1 {
+      padding-top: 2rem;
+      padding-bottom: 2rem;
       font-size: 2.5rem;
     }
+    p {
+      font-size: 1.5rem;
+      padding-bottom: 1rem;
+    }
+    a {
+      color: #ff6f61;
+    }
+    pre {
+      padding: 1rem 0;
+      font-size: 1.2rem;
+    }
   }
+}
+
+footer {
+  padding-bottom: 2rem;
+  font-size: 1.5rem;
 }
