@@ -31,7 +31,7 @@ even if the only reason you have for building them is for the satisfaction of
 having built something of use for yourself. He has a ton of projects he has written
 himself, but his most popular is by far his tiling window manager for Windows 
 (and now also Mac) [Komorebi](https://lgug2z.github.io/komorebi/index.html) which
-I made [a video](https://youtu.be/0LCbS_gm0RA) showcasing, almost 2 years ago and I
+I made [a video](https://youtu.be/0LCbS_gm0RA) showcasing almost 2 years ago and I
 was amazingly surprised to see getting a ton of views and is now sitting at 33k views.
 
 For now this website is one huge WIP, but I have everything I need for it to fulfill
