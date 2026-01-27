@@ -1,3 +1,4 @@
 {
-    "liveServer.settings.root": "/build/"
+    "liveServer.settings.root": "/build/",
+    "editor.rulers": [80]
 }
