@@ -120,9 +120,9 @@ generate_html_file :: proc(
 
 generate_index :: proc(template: []u8) {
 	content_string_builder := strings.builder_make()
-	strings.write_string(&content_string_builder, "<h1>Index</h1>")
+	strings.write_string(&content_string_builder, "<h1>Articles</h1>")
 	strings.write_string(&content_string_builder, generate_article_list())
-	generate_html_file("index.html", strings.to_string(content_string_builder), template, "Index")
+	generate_html_file("index.html", strings.to_string(content_string_builder), template, "Olge")
 }
 
 generate_article_index :: proc(template: []u8) {
