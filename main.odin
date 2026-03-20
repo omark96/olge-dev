@@ -14,12 +14,14 @@ BUILD_ROOT :: "build/"
 
 Article_Header :: struct {
 	title: string,
+	date:  string,
 }
 
 Article :: struct {
 	using header: Article_Header,
 	name:         string,
 	content:      string,
+	summary:      string,
 }
 
 articles: ^[dynamic]Article
@@ -182,8 +184,13 @@ load_articles :: proc(articles_files: []os2.File_Info) {
 		} else {
 			header.title = article_name
 		}
-
-		append(articles, Article{header = header, name = article_name, content = string(html)})
+		content := string(html)
+		body_start := strings.index(content, "<p>")
+		summary := generate_summary(content[body_start:], 250)
+		append(
+			articles,
+			Article{header = header, name = article_name, content = content, summary = summary},
+		)
 		// article_html_name := fmt.tprintf("%s.html", article_name)
 		// article_html_path, err_article_html_path := os2.join_path(
 		// 	{BUILD_ROOT, "articles", article_html_name},
@@ -224,14 +231,36 @@ generate_article_list :: proc() -> string {
 		strings.write_string(
 			&sb,
 			fmt.tprintf(
-				"<li><a href=\"articles/%s.html\">%s</a></li>\n",
+				"<a href=\"articles/%s.html\"><li><span>%s</span><h3>%s</h3><div class=\"summary\">%s...</div></li></a>\n",
 				article.name,
+				article.date,
 				article.title,
+				article.summary,
 			),
 		)
 	}
 	strings.write_string(&sb, "</ul>\n")
 	return strings.to_string(sb)
+}
+
+generate_summary :: proc(content: string, length: int) -> string {
+	sb := strings.builder_make()
+	in_tag := false
+	count := 0
+	for {
+		next_char := content[count]
+		if count >= length && next_char == ' ' {
+			return strings.to_string(sb)
+		}
+		if next_char == '<' {
+			in_tag = true
+		} else if next_char == '>' {
+			in_tag = false
+		} else if !in_tag {
+			strings.write_byte(&sb, next_char)
+		}
+		count += 1
+	}
 }
 
 format_html_files :: proc() {

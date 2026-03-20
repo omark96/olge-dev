@@ -1,6 +1,7 @@
 ---
 {
-    "title": "Why build anything?"
+    "title": "Why build anything?",
+    "date": "2026-01-27"
 }
 ---
 # Why build anything?
