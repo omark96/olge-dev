@@ -5,7 +5,6 @@ import "core:encoding/json"
 import "core:flags"
 import "core:fmt"
 import "core:os"
-import "core:os/os2"
 import "core:strings"
 import "core:time"
 import cm "vendor:commonmark"
@@ -35,20 +34,20 @@ opt: Options
 main :: proc() {
 	start_time := time.now()
 	style: flags.Parsing_Style = .Odin
-	flags.parse_or_exit(&opt, os2.args, style)
+	flags.parse_or_exit(&opt, os.args, style)
 	fmt.println(opt)
-	os2.remove_all("build/")
-	os2.make_directory_all("./build/articles/")
-	os2.make_directory_all("./build/js/")
-	// os2.make_directory_all("./build/styles/")
-	// os2.make_directory_all("./build/js/highlight/languages/")
-	// os2.make_directory_all("./build/js/highlight/styles/")
+	os.remove_all("build/")
+	os.make_directory_all("./build/articles/")
+	os.make_directory_all("./build/js/")
+	// os.make_directory_all("./build/styles/")
+	// os.make_directory_all("./build/js/highlight/languages/")
+	// os.make_directory_all("./build/js/highlight/styles/")
 	// str := "# Title\nHello from *Odin*!"
 	// root := cm.parse_document(raw_data(str), len(str), cm.DEFAULT_OPTIONS)
 	// html := cm.render_html(root, cm.DEFAULT_OPTIONS)
 	// fmt.println(html)
-	// article, err := os2.read_entire_file("articles/first.md", context.temp_allocator)
-	// if err != os2.ERROR_NONE {
+	// article, err := os.read_entire_file("articles/first.md", context.temp_allocator)
+	// if err != os.ERROR_NONE {
 	// 	fmt.println("Failed to read file")
 	// 	fmt.printfln("Error: %v", err)
 	// 	return
@@ -56,35 +55,35 @@ main :: proc() {
 	// root := cm.parse_document(raw_data(article), len(article), cm.DEFAULT_OPTIONS)
 	// html := cm.render_html(root, cm.DEFAULT_OPTIONS)
 	// fmt.println(html)
-	articles_files, err_articles := os2.read_directory_by_path(
+	articles_files, err_articles := os.read_directory_by_path(
 		"articles",
 		0,
 		context.temp_allocator,
 	)
-	if err_articles != os2.ERROR_NONE {
+	if err_articles != os.ERROR_NONE {
 		fmt.println("Failed to read directory")
 		fmt.printfln("Error: %v", err_articles)
 		return
 	}
 	// generate_articles(articles_files, articles)
 
-	template, err_template := os2.read_entire_file("template.html", context.temp_allocator)
-	if err_template != os2.ERROR_NONE {
+	template, err_template := os.read_entire_file("template.html", context.temp_allocator)
+	if err_template != os.ERROR_NONE {
 		fmt.println("Failed to read template")
 		fmt.printfln("Error: %v", err_template)
 		return
 	}
 	when ODIN_OS == .Windows {
-		js_copy_err := os2.copy_directory_all("build/", "js")
+		js_copy_err := os.copy_directory_all("build/", "js")
 	} else when ODIN_OS == .Linux {
-		js_copy_err := os2.copy_directory_all("build/js/", "js")
+		js_copy_err := os.copy_directory_all("build/js/", "js")
 	}
-	if js_copy_err != os2.ERROR_NONE {
+	if js_copy_err != os.ERROR_NONE {
 		fmt.println("Failed to copy js directory")
 		fmt.printfln("Error: %v", js_copy_err)
 		return
 	}
-	os2.copy_file("build/style.css", "style.css")
+	os.copy_file("build/style.css", "style.css")
 	load_articles(articles_files)
 
 	generate_articles(template)
@@ -107,17 +106,17 @@ generate_html_file :: proc(
 	template: []u8,
 	title: string = "",
 ) {
-	html_path, err_html_path := os2.join_path({BUILD_ROOT, file_path}, context.temp_allocator)
-	html_file, _ := os2.open(html_path, {.Write, .Create, .Trunc})
-	defer os2.close(html_file)
-	if err_html_path != os2.ERROR_NONE {
+	html_path, err_html_path := os.join_path({BUILD_ROOT, file_path}, context.temp_allocator)
+	html_file, _ := os.open(html_path, {.Write, .Create, .Trunc})
+	defer os.close(html_file)
+	if err_html_path != os.ERROR_NONE {
 		fmt.println("Failed to create html path")
 		fmt.printfln("Error: %v", err_html_path)
 		return
 	}
 	html_string_builder := strings.builder_make()
 	fmt.sbprintf(&html_string_builder, string(template), title, content)
-	os2.write_string(html_file, strings.to_string(html_string_builder))
+	os.write_string(html_file, strings.to_string(html_string_builder))
 }
 
 generate_index :: proc(template: []u8) {
@@ -139,19 +138,19 @@ generate_article_index :: proc(template: []u8) {
 	)
 }
 
-load_articles :: proc(articles_files: []os2.File_Info) {
+load_articles :: proc(articles_files: []os.File_Info) {
 	if articles == nil {
 		articles = new([dynamic]Article)
 	}
 	for article in articles_files {
-		article_path, err_path := os2.join_path({"articles", article.name}, context.temp_allocator)
-		if err_path != os2.ERROR_NONE {
+		article_path, err_path := os.join_path({"articles", article.name}, context.temp_allocator)
+		if err_path != os.ERROR_NONE {
 			fmt.println("Failed to join path")
 			fmt.printfln("Error: %v", err_path)
 			continue
 		}
-		md, err_md := os2.read_entire_file_from_path(article_path, context.temp_allocator)
-		if err_md != os2.ERROR_NONE {
+		md, err_md := os.read_entire_file_from_path(article_path, context.temp_allocator)
+		if err_md != os.ERROR_NONE {
 			fmt.println("Failed to read article")
 			fmt.printfln("Error: %v", err_md)
 			continue
@@ -192,22 +191,22 @@ load_articles :: proc(articles_files: []os2.File_Info) {
 			Article{header = header, name = article_name, content = content, summary = summary},
 		)
 		// article_html_name := fmt.tprintf("%s.html", article_name)
-		// article_html_path, err_article_html_path := os2.join_path(
+		// article_html_path, err_article_html_path := os.join_path(
 		// 	{BUILD_ROOT, "articles", article_html_name},
 		// 	context.temp_allocator,
 		// )
-		// article_file, _ := os2.open(article_html_path, {.Write, .Create, .Trunc})
-		// defer os2.close(article_file)
-		// if err_article_html_path != os2.ERROR_NONE {
+		// article_file, _ := os.open(article_html_path, {.Write, .Create, .Trunc})
+		// defer os.close(article_file)
+		// if err_article_html_path != os.ERROR_NONE {
 		// 	fmt.println("Failed to create article html path")
 		// 	fmt.printfln("Error: %v", err_article_html_path)
 		// 	continue
 		// }
-		// os2.write_string(article_file, "\n")
+		// os.write_string(article_file, "\n")
 		// html_split := strings.split(string(html), "\n")
 		// for line in html_split {
-		// 	os2.write_string(article_file, line)
-		// 	os2.write_string(article_file, "\n")
+		// 	os.write_string(article_file, line)
+		// 	os.write_string(article_file, "\n")
 		// }
 	}
 }
@@ -266,8 +265,8 @@ generate_summary :: proc(content: string, length: int) -> string {
 format_html_files :: proc() {
 	buf := [2000]u8{}
 	stdout := buf[:]
-	state: os2.Process_State
-	prettier := os2.Process_Desc {
+	state: os.Process_State
+	prettier := os.Process_Desc {
 		// command = {"npx", "prettier", "-c", "build", "-w"},
 		command = {
 			"powershell",
@@ -279,7 +278,7 @@ format_html_files :: proc() {
 			"build/**/*.html",
 		},
 	}
-	state, stdout, _, _ = os2.process_exec(prettier, context.temp_allocator)
+	state, stdout, _, _ = os.process_exec(prettier, context.temp_allocator)
 	for !state.exited {
 		time.sleep(10 * time.Millisecond)
 	}
